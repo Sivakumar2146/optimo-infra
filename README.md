@@ -34,7 +34,8 @@ Client → Internet → EC2 (Public Subnet) → RDS (Private Subnet)
 
 ### 1. VPC and Subnet Design
 
-![VPC](./images/01-vpc-created.png)
+<img width="733" height="365" alt="01-vpc-created" src="https://github.com/user-attachments/assets/c30075b4-b929-4fe6-b726-cdb7a2c8a74e" />
+
 
 ---
 
@@ -42,47 +43,55 @@ Client → Internet → EC2 (Public Subnet) → RDS (Private Subnet)
 
 #### App Security Group (EC2)
 
-![App SG](./images/02-app-security-group.png)
+<img width="665" height="202" alt="02-app-security-group" src="https://github.com/user-attachments/assets/7b11cafd-bf62-4979-8325-623ed6ba89b8" />
+
 
 #### Database Security Group (RDS)
 
-![DB SG](./images/03-db-security-group.png)
+<img width="635" height="183" alt="03-db-security-group" src="https://github.com/user-attachments/assets/32cd7454-f38f-4077-b444-18acc9e47014" />
+
 
 ---
 
 ### 3. EC2 Instance Running
 
-![EC2](./images/04-ec2-running.png)
+<img width="869" height="410" alt="04-ec2-running" src="https://github.com/user-attachments/assets/9b9fba0a-8a65-42dd-a9d8-8583b9b76557" />
+
 
 ---
 
 ### 4. SSH Access to EC2
 
-![SSH](./images/05-ec2-ssh-connected.png)
+<img width="865" height="218" alt="05-ec2-ssh-connected" src="https://github.com/user-attachments/assets/cca95bef-f3b4-43cc-a37e-3fb5b750ed2a" />
+
 
 ---
 
 ### 5. Web Server Running (Nginx)
 
-![Nginx](./images/06-app-running-browser.png)
+<img width="943" height="261" alt="06-app-running-browser" src="https://github.com/user-attachments/assets/f2546997-22be-4f2f-a394-e1fbda17def2" />
+
 
 ---
 
 ### 6. RDS Instance Available
 
-![RDS](./images/07-rds-available.png)
+<img width="836" height="23" alt="07-rds-available" src="https://github.com/user-attachments/assets/2680e3ee-5887-4121-88c4-2593fd752cca" />
+
 
 ---
 
 ### 7. EC2 to RDS Connectivity
 
-![RDS Connection](./images/08-rds-connectivity.png)
+<img width="842" height="404" alt="08-rds-connectivity" src="https://github.com/user-attachments/assets/10455ea8-9749-49b2-9b34-c5fe0bb74b2a" />
+
 
 ---
 
 ### 8. PostgreSQL Connection Success
 
-![DB Connected](./images/09-db-connection-success.png)
+<img width="576" height="304" alt="09-db-connection-success" src="https://github.com/user-attachments/assets/ad578dd0-e692-4a7c-b6ec-a0adcc9c3838" />
+
 
 ---
 
