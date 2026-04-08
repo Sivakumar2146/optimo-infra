@@ -263,7 +263,7 @@ To manage costs in production I would set up AWS Budgets with an email alert at 
 
 ---
 
-## Screenshots
+## Images
 
 All screenshots of the AWS Console setup are in the `/screenshots` folder:
 
@@ -271,9 +271,8 @@ All screenshots of the AWS Console setup are in the `/screenshots` folder:
 - `02-app-security-group.png` – Security group rules for EC2
 - `03-db-security-group.png` – Security group rules for RDS
 - `04-ec2-running.png` – EC2 instance in running state
-- `05-ec2-details.png` – EC2 public IP and VPC assignment
-- `06-ec2-ssh-connected.png` – Terminal connected via SSH
-- `07-app-running-browser.png` – Nginx running at public IP
-- `08-rds-available.png` – RDS instance status available
-- `09-rds-connectivity.png` – RDS endpoint and EC2 connection confirmed
-- `10-db-connection-success.png` – Successful psql connection from EC2
+- `05-ec2-ssh-connected.png` – Terminal connected via SSH
+- `06-app-running-browser.png` – Nginx running at public IP
+- `07-rds-available.png` – RDS instance status available
+- `08-rds-connectivity.png` – RDS endpoint and EC2 connection confirmed
+- `09-db-connection-success.png` – Successful psql connection from EC2
