@@ -1,278 +1,279 @@
-# AWS Infrastructure Assignment – Secure Web App Deployment
+# AWS Infrastructure Setup – IT Systems Assignment
 
-## 📌 Overview
-
-This project demonstrates a secure and production-oriented AWS infrastructure for hosting a web application with a PostgreSQL database.
-
-The architecture follows best practices:
-
-* Separation of public and private resources
-* Controlled network access
-* Secure database deployment
+## Time Taken
+I estimated around 10–12 hours for this assignment. Most of the time went into getting the VPC networking right and making sure the RDS instance was properly isolated from the internet.
 
 ---
 
-## 🏗️ Architecture Overview
-
-### Components Used:
-
-* Custom VPC (10.0.0.0/16)
-* Public Subnet (Application Layer)
-* Private Subnet (Database Layer)
-* EC2 Instance (Ubuntu + Nginx)
-* RDS PostgreSQL
-* Internet Gateway
-* Security Groups
-
-### Architecture Flow:
-
-Client → Internet → EC2 (Public Subnet) → RDS (Private Subnet)
-
----
-
-## 📸 Infrastructure Proof
-
-### 1. VPC and Subnet Design
-
-<img width="733" height="365" alt="01-vpc-created" src="https://github.com/user-attachments/assets/c30075b4-b929-4fe6-b726-cdb7a2c8a74e" />
-
-
----
-
-### 2. Security Groups Configuration
-
-#### App Security Group (EC2)
-
-<img width="665" height="202" alt="02-app-security-group" src="https://github.com/user-attachments/assets/7b11cafd-bf62-4979-8325-623ed6ba89b8" />
-
-
-#### Database Security Group (RDS)
-
-<img width="635" height="183" alt="03-db-security-group" src="https://github.com/user-attachments/assets/32cd7454-f38f-4077-b444-18acc9e47014" />
-
-
----
-
-### 3. EC2 Instance Running
-
-<img width="869" height="410" alt="04-ec2-running" src="https://github.com/user-attachments/assets/9b9fba0a-8a65-42dd-a9d8-8583b9b76557" />
-
-
----
-
-### 4. SSH Access to EC2
-
-<img width="865" height="218" alt="05-ec2-ssh-connected" src="https://github.com/user-attachments/assets/cca95bef-f3b4-43cc-a37e-3fb5b750ed2a" />
-
-
----
-
-### 5. Web Server Running (Nginx)
-
-<img width="943" height="261" alt="06-app-running-browser" src="https://github.com/user-attachments/assets/f2546997-22be-4f2f-a394-e1fbda17def2" />
-
-
----
-
-### 6. RDS Instance Available
-
-<img width="836" height="23" alt="07-rds-available" src="https://github.com/user-attachments/assets/2680e3ee-5887-4121-88c4-2593fd752cca" />
-
-
----
-
-### 7. EC2 to RDS Connectivity
-
-<img width="842" height="404" alt="08-rds-connectivity" src="https://github.com/user-attachments/assets/10455ea8-9749-49b2-9b34-c5fe0bb74b2a" />
-
-
----
-
-### 8. PostgreSQL Connection Success
-
-<img width="576" height="304" alt="09-db-connection-success" src="https://github.com/user-attachments/assets/ad578dd0-e692-4a7c-b6ec-a0adcc9c3838" />
-
-
----
-
-## 🌐 Networking Design
-
-### VPC
-
-* CIDR: 10.0.0.0/16
-
-### Subnets
-
-* Public Subnet:
-
-  * Hosts EC2
-  * Internet access via Internet Gateway
-* Private Subnet:
-
-  * Hosts RDS
-  * No direct internet access
-
-### Routing
-
-* Public Route Table:
-
-  * 0.0.0.0/0 → Internet Gateway
-* Private Route Table:
-
-  * No internet route (isolated)
-
-### Design Decisions
-
-* Database is placed in private subnet to improve security
-* Only EC2 can access RDS using Security Group rules
-
----
-
-## 🔐 Security Design
-
-### EC2 Security Group
-
-* Allow HTTP (80) from anywhere
-* Allow SSH (22) only from my IP
-* Outbound: Allow all
-
-### RDS Security Group
-
-* Allow PostgreSQL (5432) only from EC2 Security Group
-
-### Security Best Practices
-
-* Database is not publicly accessible
-* No open database ports to internet
-* Restricted SSH access
-* Internal communication via private IP
-
----
-
-## ⚙️ Setup Steps (Manual)
-
-### Step 1: Create VPC
-
-* CIDR: 10.0.0.0/16
-
-### Step 2: Create Subnets
-
-* Public Subnet (for EC2)
-* Private Subnet (for RDS)
-
-### Step 3: Configure Internet Gateway
-
-* Attach IGW to VPC
-* Associate with public route table
-
-### Step 4: Launch EC2 Instance
-
-* Ubuntu AMI
-* Install Nginx:
-
-```bash
-sudo apt update
-sudo apt install nginx -y
+## What I Built
+
+The goal was to set up a secure, simple infrastructure on AWS for an internal service — one application server and one PostgreSQL database, properly separated so the database is never exposed to the internet.
+
+Here is the high-level picture of what I ended up with:
+
+```
+Internet
+    |
+    |  (port 80 only)
+    |
+[Internet Gateway]
+    |
+[Public Subnet - ap-south-1a]
+    |
+[EC2 - optimo-app-server]   <-- Nginx web server, t3.micro
+    |
+    |  (port 5432, internal VPC traffic only)
+    |
+[Private Subnet - ap-south-1b]
+    |
+[RDS PostgreSQL - optimo-db]  <-- db.t4g.micro, NOT public
 ```
 
-### Step 5: Create RDS PostgreSQL
+Everything sits inside a custom VPC (`optimo-vpc-vpc`, CIDR `10.0.0.0/16`) in the Mumbai region (`ap-south-1`).
 
-* Private subnet
-* Disable public access
+---
 
-### Step 6: Configure Security Groups
+## How to Run This
 
-* EC2 → allow HTTP & SSH
-* RDS → allow only EC2 SG
+### Prerequisites
+- AWS account with access to EC2 and RDS
+- The `optimo-key.pem` key file (shared separately)
+- A terminal (Linux/Mac) or PuTTY on Windows
 
-### Step 7: Connect EC2 to RDS
-
+### Step 1 – SSH into the app server
 ```bash
-psql -h <rds-endpoint> -U adminuser -d postgres -p 5432
+chmod 400 optimo-key.pem
+ssh -i optimo-key.pem ubuntu@3.109.4.117
 ```
 
----
+### Step 2 – Check the web server is running
+Open a browser and go to:
+```
+http://3.109.4.117
+```
+You should see the Nginx default page confirming the server is up.
 
-## 🔄 DevOps Practices
+### Step 3 – Connect to the database (from inside EC2)
+```bash
+sudo apt install postgresql-client -y
 
-### Current Approach
+psql -h optimo-db.cjkww8kqmo4u.ap-south-1.rds.amazonaws.com \
+     -U adminuser \
+     -d postgres \
+     -p 5432
+```
+Enter the password when prompted. You should get a `postgres=>` prompt.
 
-* Infrastructure created manually via AWS Console
-
-### Improvements (Future)
-
-* Use Terraform for Infrastructure as Code
-* Automate provisioning
-* Version control infrastructure
-
----
-
-## 📈 Scalability & Reliability
-
-### Current Limitations
-
-* Single EC2 instance
-* Single RDS instance
-
-### Scaling Strategy
-
-* Add Application Load Balancer (ALB)
-* Use Auto Scaling Group
-* Enable RDS Multi-AZ
-
-### Reliability Improvements
-
-* Health checks via ALB
-* Automated failover for DB
+Type `\q` to exit.
 
 ---
 
-## 💰 Cost Estimation
+## Networking – How I Thought About It
 
-### Monthly Cost (Approx)
+### VPC and Subnets
 
-| Service            | Cost           |
-| ------------------ | -------------- |
-| EC2 (t3.micro)     | ~$8            |
-| RDS (db.t4g.micro) | ~$15           |
-| Storage            | ~$5            |
-| Data Transfer      | ~$2            |
-| **Total**          | **~$30/month** |
+I created a custom VPC instead of using the AWS default one. The default VPC is fine for quick testing but not suitable when you want proper isolation between components.
 
-### Cost Optimization
+Inside the VPC I created 4 subnets across 2 availability zones:
 
-* No NAT Gateway (avoided high cost)
-* Used small instance sizes
-* Minimal resources
+| Subnet | Type | CIDR Block | Zone |
+|---|---|---|---|
+| optimo-vpc-subnet-public1 | Public | 10.0.0.0/20 | ap-south-1a |
+| optimo-vpc-subnet-public2 | Public | 10.0.16.0/20 | ap-south-1b |
+| optimo-vpc-subnet-private1 | Private | 10.0.128.0/20 | ap-south-1a |
+| optimo-vpc-subnet-private2 | Private | 10.0.144.0/20 | ap-south-1b |
 
-### Hidden Costs
+The app server (EC2) lives in the public subnet because it needs to be reachable from the internet on port 80. The database lives in the private subnet — there is no route from the internet to the private subnet at all.
 
-* NAT Gateway (~$30/month)
-* Data transfer charges
-* Storage scaling
+### Internet Gateway and Routing
 
----
+I attached an Internet Gateway to the VPC and created a route table for the public subnet that sends all outbound traffic (`0.0.0.0/0`) through it. The private subnet has no such route — it can only communicate within the VPC.
 
-## ⚠️ Trade-offs
+### Why No NAT Gateway?
 
-* Did not use NAT Gateway to reduce cost
-* No Load Balancer (kept simple)
-* Manual setup instead of IaC
+A NAT Gateway would allow the private subnet to reach the internet for things like OS updates, without being publicly accessible. I chose not to add one here because it costs around $32/month and is not needed for this assignment. In a real production setup I would add it.
+
+### EC2 to RDS Communication
+
+When I set up the RDS instance I connected it to the EC2 instance through the AWS console. AWS automatically created a dedicated security group that allows only the app server to talk to the database on port 5432. Nothing else can reach the database endpoint.
 
 ---
 
-## 🚀 Future Enhancements
+## Security
 
-* Terraform implementation
-* CI/CD pipeline
-* HTTPS (SSL via ACM)
-* Secrets Manager for credentials
-* CloudWatch monitoring
+This was the part I spent the most time thinking about.
+
+### Security Groups
+
+**App server (`optimo-app-sg`):**
+
+| Protocol | Port | Source | Why |
+|---|---|---|---|
+| TCP | 80 | 0.0.0.0/0 | Web traffic from internet |
+| TCP | 22 | 115.108.41.182/32 | SSH from my IP only |
+
+**Database (`rds-ec2-2`):**
+
+| Protocol | Port | Source | Why |
+|---|---|---|---|
+| TCP | 5432 | optimo-app-sg only | Only EC2 can connect to DB |
+
+### Key decisions I made
+
+**Database not public.** RDS is set to `Publicly Accessible = No`. Even if someone has the endpoint URL, they cannot connect from outside the VPC. This is the most important control in the whole setup.
+
+**SSH locked to my IP.** Port 22 is only open to `115.108.41.182/32`. It is not open to the internet. This prevents brute force attacks.
+
+**Least privilege.** Each security group allows only the minimum needed. The DB security group only allows port 5432, and only from the app server's security group — not from any IP range.
+
+**Credentials not in code.** The database password is not hardcoded anywhere. In production I would store it in AWS Secrets Manager and retrieve it at runtime. For this assignment it is kept outside the codebase.
+
+**Encryption at rest.** RDS encryption is enabled using AWS-managed KMS keys. This was on by default and I kept it.
+
+### Trade-offs
+
+I did not set up HTTPS. For production I would use ACM with a load balancer to terminate SSL. For this demo with a plain IP, HTTP is acceptable.
+
+SSH is still open on port 22. In a more hardened setup I would remove SSH entirely and use AWS Systems Manager Session Manager instead, which gives shell access without opening any inbound ports.
+
+No WAF is configured. For a public API I would put AWS WAF in front of the load balancer.
+
+### Monitoring
+
+EC2 basic monitoring is enabled — CloudWatch collects CPU, network, and disk metrics every 5 minutes. RDS has Performance Insights and Database Insights Standard enabled.
+
+In production I would add CloudWatch Alarms: alert if CPU goes above 80%, if free storage drops below 20%, or if there are repeated failed connection attempts on the database.
 
 ---
 
-## ✅ Conclusion
+## DevOps – Making This Repeatable
 
-This project demonstrates a secure AWS infrastructure with proper network isolation, controlled access, and production-oriented design decisions while keeping cost efficiency in mind.
+I set everything up manually through the AWS Console. I did this on purpose so I could understand each component before writing it as code.
+
+In a real environment I would use Terraform to define all of this infrastructure as code. The main benefit is repeatability — if the environment needs to be recreated, anyone runs `terraform apply` and gets the exact same setup. All changes go through Git and can be reviewed before applying.
+
+A basic structure would look like:
+
+```
+infrastructure/
+├── main.tf              # AWS provider, region
+├── vpc.tf               # VPC, subnets, IGW, route tables
+├── security_groups.tf   # Firewall rules
+├── ec2.tf               # App server
+├── rds.tf               # PostgreSQL instance
+└── variables.tf         # Environment-specific values
+```
+
+For deployments, a simple script handles pushing updates:
+
+```bash
+#!/bin/bash
+# scripts/deploy.sh
+
+SERVER="ubuntu@3.109.4.117"
+KEY="optimo-key.pem"
+
+echo "Starting deployment..."
+ssh -i $KEY $SERVER "sudo systemctl restart nginx"
+echo "Done at $(date)"
+```
+
+For CI/CD I would use GitHub Actions — automatic deployment whenever code is merged to the main branch, with a rollback step if the health check fails after deployment.
 
 ---
+
+## Scalability and Reliability
+
+The current setup uses a single EC2 and a single RDS. It works but has obvious single points of failure. Here is how I would scale it.
+
+### Application layer
+
+Replace the single EC2 with an Auto Scaling Group behind an Application Load Balancer. The ASG would keep at least 2 instances running across different availability zones. It scales out when CPU goes above 70% and scales in when it drops below 30%. The load balancer does health checks and stops sending traffic to unhealthy instances automatically.
+
+### Database layer
+
+Enable RDS Multi-AZ. AWS keeps a standby replica in a second availability zone and automatically fails over if the primary goes down — usually within 60 seconds. For read-heavy workloads, a Read Replica handles reporting queries so they don't compete with write traffic on the main instance.
+
+### Where bottlenecks happen
+
+The database is almost always the first bottleneck. When traffic grows, the app servers can scale horizontally, but database connections pile up fast. Adding a connection pooler like PgBouncer between the app and the database helps a lot — it reuses existing connections instead of opening a new one for every request.
+
+### Failure handling
+
+| What fails | Today | In production |
+|---|---|---|
+| EC2 instance goes down | App is down | ASG replaces it automatically |
+| RDS primary fails | DB is unavailable | Multi-AZ failover, ~60 seconds |
+| Full AZ outage | Partial outage | Multi-AZ + multi-subnet spans two zones |
+| Disk fills up | DB stops accepting writes | Storage auto scaling + CloudWatch alert |
+
+---
+
+## Cost Estimate
+
+### What is running right now
+
+| Resource | Spec | Monthly cost |
+|---|---|---|
+| EC2 instance | t3.micro, on-demand | ~$8 |
+| RDS PostgreSQL | db.t4g.micro | ~$15 |
+| EBS (EC2 disk) | 8 GiB gp2 | ~$1 |
+| RDS storage | 20 GiB gp2 | ~$2.30 |
+| Data transfer | Outbound | ~$1–2 |
+| **Total** | | **~$27–28/month** |
+
+Since this is on a new AWS account, EC2 and RDS likely fall within the Free Tier for the first 12 months — actual cost is close to zero right now.
+
+### Things that could unexpectedly cost money
+
+**NAT Gateway** – I did not create one. If I had, it would be $32/month just for having it running, plus $0.045 per GB of traffic. It adds up fast if you are not watching it.
+
+**RDS backups** – AWS keeps backup storage equal to your DB size for free. If you increase retention beyond 7 days, extra storage is charged.
+
+**Data transfer** – Traffic inside the same VPC is free. Outbound to the internet is charged after 100 GB/month.
+
+**Idle Elastic IPs** – AWS charges for allocated Elastic IPs that are not attached to a running instance. I used the auto-assigned public IP to avoid this.
+
+### If this were scaled for production
+
+| Resource | Spec | Monthly cost |
+|---|---|---|
+| Application Load Balancer | Standard | ~$20 |
+| 2x EC2 t3.small | Auto Scaling Group | ~$30 |
+| RDS Multi-AZ db.t3.small | PostgreSQL | ~$55 |
+| NAT Gateway | Single AZ | ~$32 |
+| CloudWatch logs and alarms | Standard | ~$5 |
+| **Total** | | **~$142/month** |
+
+To manage costs in production I would set up AWS Budgets with an email alert at 80% of the monthly limit, and use Savings Plans for compute which can cut EC2 and RDS costs by 30–40% on predictable workloads.
+
+---
+
+## Assumptions and Trade-offs
+
+**Single EC2, no load balancer** – A load balancer only makes sense when you have more than one app instance. I described how I would add it when scaling up.
+
+**No HTTPS** – Setting up SSL needs a domain name and an ACM certificate. Since this uses a plain IP, HTTP is fine for the demo. Production must have HTTPS.
+
+**Manual setup** – I provisioned everything manually to show I understand each component. The logical next step is writing it all in Terraform.
+
+**Nginx as the app layer** – The focus of this assignment was infrastructure, not application code. Nginx is running and accessible at the public IP as the application layer.
+
+**No Multi-AZ on RDS** – Saves money for this demo. In production this would be the first thing I enable.
+
+---
+
+## Screenshots
+
+All screenshots of the AWS Console setup are in the `/screenshots` folder:
+
+- `01-vpc-created.png` – Custom VPC and all subnets created
+- `02-app-security-group.png` – Security group rules for EC2
+- `03-db-security-group.png` – Security group rules for RDS
+- `04-ec2-running.png` – EC2 instance in running state
+- `05-ec2-details.png` – EC2 public IP and VPC assignment
+- `06-ec2-ssh-connected.png` – Terminal connected via SSH
+- `07-app-running-browser.png` – Nginx running at public IP
+- `08-rds-available.png` – RDS instance status available
+- `09-rds-connectivity.png` – RDS endpoint and EC2 connection confirmed
+- `10-db-connection-success.png` – Successful psql connection from EC2
