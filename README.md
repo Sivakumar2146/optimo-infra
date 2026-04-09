@@ -262,9 +262,9 @@ To manage costs in production I would set up AWS Budgets with an email alert at 
 
 ---
 
-## Screenshots
+## Images
 
-All screenshots of the AWS Console setup are in the `/screenshots` folder:
+All screenshots of the AWS Console setup are in the `/images` folder:
 
 - `01-vpc-created.png` – Custom VPC and all subnets created
 - `02-app-security-group.png` – Security group rules for EC2
