@@ -93,7 +93,7 @@ I attached an Internet Gateway to the VPC and created a route table for the publ
 
 A NAT Gateway would allow the private subnet to reach the internet for things like OS updates, without being publicly accessible. I chose not to add one here because it costs around $32 per month and is not needed for this assignment. In a real production setup I would add it.
 
-## EC2 to RDS Communication
+### EC2 to RDS Communication
 
 I configured the RDS instance to allow access only from the EC2 instance using security group rules. I created a dedicated security group for the RDS instance that allows access only from the application server security group on port 5432.
 ---
