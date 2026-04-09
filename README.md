@@ -43,13 +43,13 @@ Everything sits inside a custom VPC (`optimo-vpc-vpc`, CIDR `10.0.0.0/16`) in th
 ### Step 1 – SSH into the app server
 ```bash
 chmod 400 optimo-key.pem
-ssh -i optimo-key.pem ubuntu@3.109.4.117
+ssh -i optimo-key.pem ubuntu@3.110.190.187
 ```
 
 ### Step 2 – Check the web server is running
 Open a browser and go to:
 ```
-http://3.109.4.117
+http://3.110.190.187
 ```
 You should see the Nginx default page confirming the server is up.
 
@@ -170,7 +170,7 @@ For deployments, a simple script handles pushing updates to the server:
 #!/bin/bash
 # scripts/deploy.sh
 
-SERVER="ubuntu@3.109.4.117"
+SERVER="ubuntu@3.110.190.187"
 KEY="optimo-key.pem"
 
 echo "Starting deployment..."
