@@ -96,6 +96,7 @@ A NAT Gateway would allow the private subnet to reach the internet for things li
 ### EC2 to RDS Communication
 
 I configured the RDS instance to allow access only from the EC2 instance using security group rules. I created a dedicated security group for the RDS instance that allows access only from the application server security group on port 5432.
+
 ---
 
 ## Security
